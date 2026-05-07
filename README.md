@@ -1,80 +1,478 @@
-# 幻灵世界
+# 幻灵世界 Fantasy World
 
-Minecraft 1.20.1 Plugin
+Minecraft 1.20.4 PaperMC MMORPG PvE Plugin
 
-设定
+---
 
-- 种族
-    - 人类 #没有特别的"特色"
-        - 常驻受到伤害减20%
-    - 龙人 #抗火,但是在水里会削弱
-        - 常驻抗火
-        - 碰水时,伤害减20%
-    - 妖精 #移速比较高,但是比较脆皮
-        - 常驻速度提升20%
-        - 常驻跳跃提升至2.5格
-        - 最大血量 -15%
-    - 兽人 #常驻伤害比较高,但是速度变慢
-        - 常驻伤害提升15%
-        - 速度降低15%
-        - 抗击退20%
-        - 最大血量+15%
-    - 亡灵 #夜晚时比较强,白天比较弱
-        - 常驻吸血(30%)
-        - 在夜晚时伤害提升20%
-        - 在白天时吸血变弱(只有15%)
-        - 在白天使伤害减15%
-    - 天使 #白天时比较强,夜晚比较弱
-        - 免疫 中毒,凋零
-        - 在白天时regeneration 1,
-        - 在白天时速度提升10%
-        - 在晚上时伤害减15%
+# 项目简介
 
-- 职业
-    - 战士 (一般攻速,中等伤害) (武器为剑)
-        - 比较均衡的近战职业
-        - 拥有职业专属道具 - 应急自疗药水
-        - 有固定CD,右键就能回血,有不同等级
-        - 等级越高,回血越高,甚至能附加其他效果
-    - 狂战士 (缓慢攻速,高伤害) (武器为斧头)
-        - 攻速慢,但是伤害高
-        - 血量越低,伤害越高
-            - 血量80%以上 伤害正常
-            - 血量80%-50% 伤害提高20%
-            - 血量50%以下 伤害提高40%
-        - 受到20%额外伤害
-    - 弓箭手 (弓箭)
-        - 远程输出,可以比较容易拉扯,但是得瞄的准
-        - 近战有短匕,伤害低,只为了防身用(?)
-        - 玩家距离怪物越远,伤害有加成
-            - 1-2格 伤害降低15%
-            - 2-5格 没有加成
-            - 5-10格 伤害提升10%
-            - 10格以上 伤害提升20%
-        - 持弓时移动速度降低
-            - 缺点是难以对付移速快的敌人
-    - 游侠 (弩)
-        - 远程输出,可以比较容易拉扯,但是得瞄的准
-        - 近战有短匕,伤害低,只为了防身用(?)
-        - 攻击力中低,持弩时移速提高
-            - 弩带有穿透,对群更好
-        - 基础伤害-10%
-        - 可以装备烟花造成爆炸伤害
-    - 法师 (魔法)
-        - 可以学习各种魔法
-        - 最多同时使用6种法术 (法术有不同CD,每个CD是分开计算的)
-        - 蓝量 (装备可以提高最大蓝量/蓝量回复提升)
-        - 回到主城可以选择不同的法术 (不吃近战伤害,使用)
-        - 法术 #使用/damage
-            - 单体,AOE,回血,移除debuff,增加伤害等 (比较万能)
-    - 刺客 (剑(改攻速))
-        - 快速攻击,高攻速,但是伤害低(平衡)
-        - 蓄力打击,3秒没攻击后的伤害x2.2
-        - 脱战首击,2.8x伤害,爆发
-        - 脱战>蓄力>快速攻击,假如触发了脱战,就不会触发蓄力
+幻灵世界 是一个以：
 
-- 等级
-- 玩家每10级会获得2点最大血量
-- 每一次死亡会清零当前等级
-- 有道具能免除惩罚(miniboss会有几率掉落)
-- 每10级会有成就
+- PvE
+- MMORPG
+- Build Diversity
+- 职业差异
+- 长期成长
+- Action Combat
+
+为核心设计方向的 Minecraft RPG 插件。
+
+本项目目标并不是：
+```text
+“在原版上加一点 RPG 内容”
+```
+
+核心设计理念
+PvE First
+
+本插件：
+
+不考虑 PvP 平衡
+所有系统围绕 PvE 设计
+强调职业体验与 Build 差异
+Framework First
+
+优先保证：
+
+系统扩展性
+Runtime 稳定性
+Combat Pipeline 正确性
+
+避免：
+
+Listener Spaghetti
+写死逻辑
+系统耦合
+Data Driven
+
+长期目标：
+
+技能配置化
+怪物配置化
+装备配置化
+职业配置化
+种族配置化
+
+尽量减少：
+
+Hardcode
+当前已完成系统
+Combat Core Framework
+ Stats System
+ Modifier System
+ Combat Entity System
+ Damage Pipeline
+ Critical Strike
+ Penetration
+ Final Damage Reduction
+ Lifesteal
+ Resource System
+ Health Bridge
+ Runtime Sync System
+ Combat Sandbox Command
+Combat Pipeline
+
+当前伤害流程：
+
+Base Damage
+→ Damage Scaling
+→ Critical Strike
+→ Penetration
+→ Defense Reduction
+→ Final Damage Reduction
+→ Final Damage
+→ Lifesteal
+RPG Runtime System
+
+当前系统：
+
+RPG Health
+↔ Minecraft Health
+
+Minecraft 原版血量：
+
+仅作为 UI 显示
+不作为真实血量
+
+真实数据：
+
+CombatEntity
+Universal Resource System
+
+所有职业都拥有：
+
+Mana
+Cooldown
+Weapon Ability
+
+Mana 不仅仅代表：
+
+法力
+
+而是：
+
+技能资源
+
+用于：
+
+武器技能
+主动技能
+职业技能
+爆发技能
+位移技能
+治疗技能
+Skill Combat Philosophy
+
+本项目战斗系统目标：
+
+不是只做伤害计算
+而是建立真正的 Gameplay Loop
+
+所有职业都围绕：
+
+Mana 管理
+Cooldown 管理
+Skill Rotation
+Burst Timing
+Resource Decision
+
+进行战斗。
+
+当前 Stats
+生存属性
+MAX_HEALTH
+HEALTH_REGEN
+MANA
+MANA_REGEN
+防御属性
+MELEE_DEFENSE
+MAGIC_DEFENSE
+DAMAGE_REDUCTION
+KNOCKBACK_RESISTANCE
+攻击属性
+MELEE_DAMAGE
+RANGE_DAMAGE
+MAGIC_DAMAGE
+TRUE_DAMAGE
+穿透属性
+ARMOR_PEN
+MAGIC_PEN
+暴击属性
+CRIT_CHANCE
+CRIT_DAMAGE
+战斗属性
+ATTACK_SPEED
+SPEED
+LIFESTEAL
+COOLDOWN_REDUCTION
+种族
+人类
+
+没有特别明显的特色。
+
+特性
+常驻受到伤害减 20%
+龙人
+
+抗火能力较强，但惧怕水。
+
+特性
+常驻抗火
+碰水时伤害降低 20%
+妖精
+
+速度极快，但较脆弱。
+
+特性
+常驻速度提升 20%
+常驻跳跃提升至 2.5 格
+最大血量 -15%
+兽人
+
+拥有强大力量，但行动缓慢。
+
+特性
+常驻伤害提升 15%
+速度降低 15%
+抗击退 20%
+最大血量 +15%
+亡灵
+
+夜晚强大，白天虚弱。
+
+特性
+常驻吸血 30%
+夜晚伤害提升 20%
+白天吸血降低至 15%
+白天伤害降低 15%
+天使
+
+白天拥有神圣力量。
+
+特性
+免疫中毒与凋零
+白天获得 Regeneration I
+白天速度提升 10%
+夜晚伤害降低 15%
+职业
+战士
+
+均衡近战职业。
+
+特点
+中等攻速
+中等伤害
+使用剑
+专属机制
+应急自疗药水
+固定 CD 主动回血
+消耗 Mana
+高等级附加额外效果
+狂战士
+
+高伤害近战职业。
+
+特点
+攻速缓慢
+高爆发
+使用斧头
+特殊机制
+
+血量越低伤害越高：
+
+80% 以上：正常
+80% ~ 50%：+20% 伤害
+50% 以下：+40% 伤害
+缺点
+受到额外 20% 伤害
+技能方向
+狂暴
+吸血
+爆发
+弓箭手
+
+高机动远程输出。
+
+特点
+使用弓
+远距离输出
+可使用短匕首防身
+特殊机制
+
+距离越远伤害越高：
+
+1~2 格：-15%
+2~5 格：无加成
+5~10 格：+10%
+10 格以上：+20%
+缺点
+持弓时移动速度降低
+技能方向
+穿透箭
+多重箭
+后跳
+游侠
+
+灵活型远程职业。
+
+特点
+使用弩
+机动性较高
+擅长群体输出
+特殊机制
+持弩时移速提升
+弩箭带穿透
+可使用烟花造成爆炸伤害
+缺点
+基础伤害 -10%
+技能方向
+爆炸箭
+烟花射击
+机动位移
+法师
+
+高自由度技能职业。
+
+特点
+使用魔法
+最多同时装备 6 个法术
+高 Mana 依赖
+法术类型
+单体
+AOE
+治疗
+净化
+增伤
+控制
+特殊机制
+技能独立 CD
+可在主城切换法术
+刺客
+
+高攻速爆发职业。
+
+特点
+高攻速
+低基础伤害
+使用改攻速剑
+特殊机制
+
+蓄力打击：
+
+3 秒未攻击
+→ 下一击 2.2x 伤害
+
+脱战首击：
+
+脱战状态
+→ 首击 2.8x 伤害
+
+优先级：
+
+脱战 > 蓄力 > 普攻
+技能方向
+突进
+隐身
+爆发连击
+RoadMap
+第一阶段 - Runtime Combat 重构
+
+目标：
+
+完全接管 Minecraft 战斗系统
+Combat Listener
+ 拦截原版伤害
+ 接管 EntityDamageByEntityEvent
+ RPG Damage Routing
+ 原版回血禁用
+ RPG Death Handling
+ 无敌帧重构
+ Damage Indicator
+Resource System
+ Health Regeneration
+ Mana Regeneration
+ Combat State
+ Out-of-combat Recovery
+ Shield / Barrier System
+Runtime UI
+ ActionBar 美化
+ 自定义 BossBar
+ Damage Hologram
+ 自定义死亡信息
+ Skill Cooldown UI
+第二阶段 - Equipment System
+
+目标：
+
+建立完整装备体系
+Weapon System
+ 武器基础数据
+ 武器攻击类型
+ 武器攻速
+ 武器 Scaling
+ Weapon Registry
+ Weapon Skill
+Armor System
+ 护甲属性
+ 套装效果
+ Damage Reduction
+ Resistance
+Item Framework
+ 自定义 Item Data
+ Lore Builder
+ Rarity System
+ Upgrade System
+ Reforge System
+第三阶段 - Buff System
+
+目标：
+
+建立真正的状态效果系统
+Buff Framework
+ Buff Registry
+ Buff Duration
+ Buff Stack
+ Periodic Effects
+ Attribute Buff
+ Debuff System
+特殊状态
+ Burn
+ Freeze
+ Poison
+ Bleed
+ Shock
+ Curse
+第四阶段 - Skill System
+
+目标：
+
+建立职业技能框架
+Skill Core
+ Skill Registry
+ Cooldown System
+ Mana Cost
+ Cast Context
+ Skill Scaling
+ Targeting System
+Spell System
+ Projectile Spell
+ AoE Spell
+ Chain Spell
+ Beam Spell
+ Summon Spell
+第五阶段 - Race System
+
+目标：
+
+将种族特性完全数据化
+Race Framework
+ Race Registry
+ Passive Effects
+ Environment Modifier
+ Race Scaling
+第六阶段 - Class System
+
+目标：
+
+建立职业成长与玩法差异
+Class Framework
+ Class Registry
+ Skill Tree
+ Passive Tree
+ Talent System
+ Progression
+第七阶段 - Mob System
+
+目标：
+
+建立真正 PvE 内容
+Mob Framework
+ Mob Stats
+ Threat System
+ Boss AI
+ Skill Casting
+ Phase System
+Dungeon System
+ Dungeon Instance
+ Boss Room
+ Mob Scaling
+ Reward Distribution
+第八阶段 - World Content
+
+目标：
+
+建立 MMORPG 世界内容
+Content
+ 主城
+ NPC
+ Quest System
+ Reputation
+ Fast Travel
+ Region Scaling
+长期目标
+Endgame
+ Raid Boss
+ Mythic Dungeon
+ Seasonal Content
+ Equipment Progression
+ Build Diversity
