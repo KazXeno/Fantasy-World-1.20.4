@@ -9,3 +9,6 @@ commands:
   testcombat:
     description: Combat test command
     usage: /testcombat <BaseDamage> <Scaling> <DamageType> <CritChance> <CritDamage> <Defense> <Penetration> <DamageReduction> <Lifesteal>
+  stats:
+    description: Show player stats
+    usage: /stats
