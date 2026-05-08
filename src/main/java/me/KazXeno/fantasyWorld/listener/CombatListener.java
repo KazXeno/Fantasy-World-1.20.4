@@ -21,11 +21,14 @@ import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
 import org.bukkit.event.entity.EntityDamageByEntityEvent;
 import org.bukkit.inventory.ItemStack;
-import me.KazXeno.fantasyWorld.combat.DamageResult;
 import me.KazXeno.fantasyWorld.combat.death.DeathManager;
 import me.KazXeno.fantasyWorld.combat.display.MobHealthDisplay;
 import me.KazXeno.fantasyWorld.combat.indicator.DamageIndicatorManager;
 import me.KazXeno.fantasyWorld.FantasyWorld;
+import me.KazXeno.fantasyWorld.combat.state.CombatTagManager;
+
+import java.util.Objects;
+
 
 public class CombatListener implements Listener {
 
@@ -43,6 +46,8 @@ public class CombatListener implements Listener {
     private final DamageIndicatorManager damageIndicatorManager = new DamageIndicatorManager(FantasyWorld.getInstance());
     // Mob health display
     private final MobHealthDisplay mobHealthDisplay = new MobHealthDisplay();
+    // Combat state manager
+    private final CombatTagManager combatTagManager = new CombatTagManager();
 
     @EventHandler
     public void onDamage(EntityDamageByEntityEvent event) {
@@ -132,14 +137,31 @@ public class CombatListener implements Listener {
 
         // Apply damage
         DamageResult result = damageEngine.damage(context);
+        //Enter combat state
+        combatTagManager.tag(attacker);
+        combatTagManager.tag(victim);
         //Spawn damage indicator
         damageIndicatorManager.spawnDamage(attacker, victim, result);
         // Update mob health display
         if(!(victim instanceof Player)){
             mobHealthDisplay.updateHealth(victim,victimCombat);
         }
-        // Trigger vanilla hurt feedback
-        victim.damage(0);
+        // Trigger player hurt feedback
+        if (victim instanceof Player playerVictim) {
+            // Play hurt animation
+            playerVictim.playHurtAnimation(0);
+            // Get hurt sound
+            var hurtSound = playerVictim.getHurtSound();
+            // Play hurt sound
+            if (hurtSound != null) {
+                playerVictim.playSound(playerVictim.getLocation(), hurtSound, 1f, 1f);
+            }
+        }
+        // Trigger mob hurt feedback
+        else {
+            victim.damage(0);
+        }
+
         // Debug message
         if (attacker instanceof Player player) {
 

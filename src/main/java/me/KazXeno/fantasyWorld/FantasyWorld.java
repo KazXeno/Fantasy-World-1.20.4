@@ -1,6 +1,8 @@
 package me.KazXeno.fantasyWorld;
 
 import me.KazXeno.fantasyWorld.command.TestCombatCommand;
+import me.KazXeno.fantasyWorld.task.ManaRegenTask;
+import me.KazXeno.fantasyWorld.task.HealthRegenTask;
 import org.bukkit.command.PluginCommand;
 import org.bukkit.plugin.java.JavaPlugin;
 import me.KazXeno.fantasyWorld.task.PlayerSyncTask;
@@ -30,6 +32,10 @@ public final class FantasyWorld extends JavaPlugin {
 
         // Start player sync task
         new PlayerSyncTask().start(this);
+        // Start mana regen task
+        new ManaRegenTask().start(this);
+        // Start health regen task
+        new HealthRegenTask().start(this);
         // Register combat listener
         getServer().getPluginManager().registerEvents(new CombatListener(), this);
 
