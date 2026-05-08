@@ -21,6 +21,8 @@ import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
 import org.bukkit.event.entity.EntityDamageByEntityEvent;
 import org.bukkit.inventory.ItemStack;
+import me.KazXeno.fantasyWorld.combat.DamageResult;
+import me.KazXeno.fantasyWorld.combat.death.DeathManager;
 
 public class CombatListener implements Listener {
 
@@ -32,6 +34,8 @@ public class CombatListener implements Listener {
     private final WeaponManager weaponManager = new WeaponManager();
     // Attack cooldown manager
     private final AttackCooldownManager cooldownManager = new AttackCooldownManager();
+    // Death Manager
+    private final DeathManager deathManager = new DeathManager();
 
     @EventHandler
     public void onDamage(EntityDamageByEntityEvent event) {
@@ -120,27 +124,19 @@ public class CombatListener implements Listener {
                 );
 
         // Apply damage
-        DamageResult result =
-                damageEngine.damage(context);
-
-// Debug message
+        DamageResult result = damageEngine.damage(context);
+        // Trigger vanilla hurt feedback
+        victim.damage(0);
+        // Debug message
         if (attacker instanceof Player player) {
 
-            player.sendMessage(
-                    "Damage: "
-                            + String.format(
-                            "%.1f",
-                            result.getFinalDamage()
-                    )
-            );
+            player.sendMessage("Damage: " + String.format("%.1f", result.getFinalDamage()));
+            player.sendMessage("Victim Health: " + String.format("%.1f", victimCombat.getHealth()));
+        }
 
-            player.sendMessage(
-                    "Victim Health: "
-                            + String.format(
-                            "%.1f",
-                            victimCombat.getHealth()
-                    )
-            );
+        // Handle death
+        if(victimCombat.getHealth() <= 0){
+            deathManager.handleDeath(victim, victimCombat);
         }
     }
 
