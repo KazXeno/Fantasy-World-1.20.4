@@ -8,8 +8,14 @@ import me.KazXeno.fantasyWorld.listener.CombatListener;
 
 public final class FantasyWorld extends JavaPlugin {
 
+    // Plugin instance
+    private static FantasyWorld instance;
+
     @Override
     public void onEnable() {
+        // Set plugin instance
+        instance = this;
+
 
         // Register test combat command
         PluginCommand testCombatCommand =
@@ -32,7 +38,10 @@ public final class FantasyWorld extends JavaPlugin {
 
     @Override
     public void onDisable() {
-
         getLogger().info("幻灵世界已关闭");
+    }
+
+    public static FantasyWorld getInstance(){
+        return instance;
     }
 }

@@ -23,6 +23,9 @@ import org.bukkit.event.entity.EntityDamageByEntityEvent;
 import org.bukkit.inventory.ItemStack;
 import me.KazXeno.fantasyWorld.combat.DamageResult;
 import me.KazXeno.fantasyWorld.combat.death.DeathManager;
+import me.KazXeno.fantasyWorld.combat.display.MobHealthDisplay;
+import me.KazXeno.fantasyWorld.combat.indicator.DamageIndicatorManager;
+import me.KazXeno.fantasyWorld.FantasyWorld;
 
 public class CombatListener implements Listener {
 
@@ -34,8 +37,12 @@ public class CombatListener implements Listener {
     private final WeaponManager weaponManager = new WeaponManager();
     // Attack cooldown manager
     private final AttackCooldownManager cooldownManager = new AttackCooldownManager();
-    // Death Manager
+    // Death manager
     private final DeathManager deathManager = new DeathManager();
+    // Damage indicator manager
+    private final DamageIndicatorManager damageIndicatorManager = new DamageIndicatorManager(FantasyWorld.getInstance());
+    // Mob health display
+    private final MobHealthDisplay mobHealthDisplay = new MobHealthDisplay();
 
     @EventHandler
     public void onDamage(EntityDamageByEntityEvent event) {
@@ -125,6 +132,12 @@ public class CombatListener implements Listener {
 
         // Apply damage
         DamageResult result = damageEngine.damage(context);
+        //Spawn damage indicator
+        damageIndicatorManager.spawnDamage(victim, result);
+        // Update mob health display
+        if(!(victim instanceof Player)){
+            mobHealthDisplay.updateHealth(victim,victimCombat);
+        }
         // Trigger vanilla hurt feedback
         victim.damage(0);
         // Debug message
