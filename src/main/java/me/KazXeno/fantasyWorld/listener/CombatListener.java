@@ -133,7 +133,7 @@ public class CombatListener implements Listener {
         // Apply damage
         DamageResult result = damageEngine.damage(context);
         //Spawn damage indicator
-        damageIndicatorManager.spawnDamage(victim, result);
+        damageIndicatorManager.spawnDamage(attacker, victim, result);
         // Update mob health display
         if(!(victim instanceof Player)){
             mobHealthDisplay.updateHealth(victim,victimCombat);

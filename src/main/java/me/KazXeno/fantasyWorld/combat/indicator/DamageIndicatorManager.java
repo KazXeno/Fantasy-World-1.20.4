@@ -2,9 +2,10 @@ package me.KazXeno.fantasyWorld.combat.indicator;
 
 import me.KazXeno.fantasyWorld.combat.DamageResult;
 import org.bukkit.Location;
-import org.bukkit.entity.ArmorStand;
+import org.bukkit.entity.Display;
 import org.bukkit.entity.EntityType;
 import org.bukkit.entity.LivingEntity;
+import org.bukkit.entity.TextDisplay;
 import org.bukkit.plugin.java.JavaPlugin;
 import org.bukkit.scheduler.BukkitRunnable;
 
@@ -23,29 +24,56 @@ public class DamageIndicatorManager {
 
     // Spawn damage indicator
     public void spawnDamage(
-            LivingEntity entity,
+            LivingEntity attacker,
+            LivingEntity victim,
             DamageResult result) {
 
-        // Random offset
-        double offsetX =
-                ThreadLocalRandom.current()
-                        .nextDouble(-0.4, 0.4);
+        // Get direction toward attacker
+        Location victimLocation =
+                victim.getLocation();
 
-        double offsetZ =
-                ThreadLocalRandom.current()
-                        .nextDouble(-0.4, 0.4);
+        Location attackerLocation =
+                attacker.getLocation();
 
-        double offsetY =
+        double dx =
+                attackerLocation.getX()
+                        - victimLocation.getX();
+
+        double dz =
+                attackerLocation.getZ()
+                        - victimLocation.getZ();
+
+        double length =
+                Math.sqrt(dx * dx + dz * dz);
+
+        // Normalize direction
+        if (length != 0) {
+
+            dx /= length;
+
+            dz /= length;
+        }
+
+        // Random spread
+        double randomX =
                 ThreadLocalRandom.current()
-                        .nextDouble(1.0, 1.8);
+                        .nextDouble(-0.25, 0.25);
+
+        double randomZ =
+                ThreadLocalRandom.current()
+                        .nextDouble(-0.25, 0.25);
+
+        double randomY =
+                ThreadLocalRandom.current()
+                        .nextDouble(1.0, 1.6);
 
         // Spawn location
         Location location =
-                entity.getLocation()
+                victimLocation.clone()
                         .add(
-                                offsetX,
-                                offsetY,
-                                offsetZ
+                                dx * 0.6 + randomX,
+                                randomY,
+                                dz * 0.6 + randomZ
                         );
 
         // Format damage
@@ -71,35 +99,35 @@ public class DamageIndicatorManager {
                     "§f" + damageText;
         }
 
-        // Spawn hologram
-        ArmorStand stand =
-                (ArmorStand) entity.getWorld()
+        // Spawn text display
+        TextDisplay display =
+                (TextDisplay) victim.getWorld()
                         .spawnEntity(
                                 location,
-                                EntityType.ARMOR_STAND
+                                EntityType.TEXT_DISPLAY
                         );
 
-        // Configure hologram
-        stand.setVisible(false);
+        // Configure display
+        display.setText(damageText);
 
-        stand.setGravity(false);
+        display.setBillboard(
+                Display.Billboard.CENTER
+        );
 
-        stand.setMarker(true);
+        display.setSeeThrough(false);
 
-        stand.setSmall(true);
+        display.setShadowed(false);
 
-        stand.setCustomNameVisible(true);
+        display.setDefaultBackground(false);
 
-        stand.setCustomName(damageText);
-
-        // Remove hologram later
+        // Remove later
         new BukkitRunnable() {
 
             @Override
             public void run() {
 
-                if (!stand.isDead()) {
-                    stand.remove();
+                if (!display.isDead()) {
+                    display.remove();
                 }
             }
 
