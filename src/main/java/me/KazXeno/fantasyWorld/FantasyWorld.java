@@ -4,6 +4,7 @@ import me.KazXeno.fantasyWorld.command.TestCombatCommand;
 import org.bukkit.command.PluginCommand;
 import org.bukkit.plugin.java.JavaPlugin;
 import me.KazXeno.fantasyWorld.task.PlayerSyncTask;
+import me.KazXeno.fantasyWorld.listener.CombatListener;
 
 public final class FantasyWorld extends JavaPlugin {
 
@@ -23,6 +24,8 @@ public final class FantasyWorld extends JavaPlugin {
 
         // Start player sync task
         new PlayerSyncTask().start(this);
+        // Register combat listener
+        getServer().getPluginManager().registerEvents(new CombatListener(), this);
 
         getLogger().info("幻灵世界已启动");
     }
