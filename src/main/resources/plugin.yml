@@ -12,3 +12,9 @@ commands:
   stats:
     description: Show player stats
     usage: /stats
+  cast:
+    description: Cast a skill
+    usage: /cast <skill_id>
+  getitem:
+    description: Open custom item browser
+    usage: /getitem

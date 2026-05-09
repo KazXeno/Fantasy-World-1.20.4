@@ -16,7 +16,9 @@ public class StatsCommand implements CommandExecutor {
     private final EntityManager entityManager = EntityManager.getInstance();
 
     // Combat state manager
-    private final CombatTagManager combatTagManager = new CombatTagManager();
+    private final CombatTagManager
+            combatTagManager =
+            CombatTagManager.getInstance();
 
     @Override
     public boolean onCommand(

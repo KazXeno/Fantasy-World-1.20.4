@@ -1,18 +1,20 @@
 package me.KazXeno.fantasyWorld.listener;
 
+import me.KazXeno.fantasyWorld.FantasyWorld;
 import me.KazXeno.fantasyWorld.combat.DamageContext;
 import me.KazXeno.fantasyWorld.combat.DamageEngine;
+import me.KazXeno.fantasyWorld.combat.DamageResult;
 import me.KazXeno.fantasyWorld.combat.DamageType;
+import me.KazXeno.fantasyWorld.combat.attack.AttackCooldownManager;
+import me.KazXeno.fantasyWorld.combat.death.DeathManager;
+import me.KazXeno.fantasyWorld.combat.display.MobHealthDisplay;
+import me.KazXeno.fantasyWorld.combat.indicator.DamageIndicatorManager;
+import me.KazXeno.fantasyWorld.combat.state.CombatTagManager;
 import me.KazXeno.fantasyWorld.entity.CombatEntity;
 import me.KazXeno.fantasyWorld.entity.EntityManager;
-import me.KazXeno.fantasyWorld.entity.MobCombatEntity;
-import me.KazXeno.fantasyWorld.entity.PlayerCombatEntity;
-import me.KazXeno.fantasyWorld.combat.DamageResult;
-import me.KazXeno.fantasyWorld.combat.attack.AttackCooldownManager;
-import me.KazXeno.fantasyWorld.item.weapon.WeaponData;
+import me.KazXeno.fantasyWorld.item.custom.data.CustomWeaponItem;
 import me.KazXeno.fantasyWorld.item.weapon.WeaponManager;
 import me.KazXeno.fantasyWorld.stats.StatType;
-import org.bukkit.Material;
 import org.bukkit.entity.Arrow;
 import org.bukkit.entity.Entity;
 import org.bukkit.entity.LivingEntity;
@@ -20,44 +22,63 @@ import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
 import org.bukkit.event.entity.EntityDamageByEntityEvent;
-import org.bukkit.inventory.ItemStack;
-import me.KazXeno.fantasyWorld.combat.death.DeathManager;
-import me.KazXeno.fantasyWorld.combat.display.MobHealthDisplay;
-import me.KazXeno.fantasyWorld.combat.indicator.DamageIndicatorManager;
-import me.KazXeno.fantasyWorld.FantasyWorld;
-import me.KazXeno.fantasyWorld.combat.state.CombatTagManager;
 
-import java.util.Objects;
-
-
-public class CombatListener implements Listener {
+public class CombatListener
+        implements Listener {
 
     // Shared entity manager
-    private final EntityManager entityManager = EntityManager.getInstance();
+    private final EntityManager
+            entityManager =
+            EntityManager.getInstance();
+
     // Damage engine
-    private final DamageEngine damageEngine = new DamageEngine();
+    private final DamageEngine
+            damageEngine =
+            new DamageEngine();
+
     // Weapon manager
-    private final WeaponManager weaponManager = new WeaponManager();
+    private final WeaponManager
+            weaponManager =
+            new WeaponManager();
+
     // Attack cooldown manager
-    private final AttackCooldownManager cooldownManager = new AttackCooldownManager();
+    private final AttackCooldownManager
+            cooldownManager =
+            new AttackCooldownManager();
+
     // Death manager
-    private final DeathManager deathManager = new DeathManager();
+    private final DeathManager
+            deathManager =
+            new DeathManager();
+
     // Damage indicator manager
-    private final DamageIndicatorManager damageIndicatorManager = new DamageIndicatorManager(FantasyWorld.getInstance());
+    private final DamageIndicatorManager
+            damageIndicatorManager =
+            new DamageIndicatorManager(
+                    FantasyWorld.getInstance()
+            );
+
     // Mob health display
-    private final MobHealthDisplay mobHealthDisplay = new MobHealthDisplay();
+    private final MobHealthDisplay
+            mobHealthDisplay =
+            new MobHealthDisplay();
+
     // Combat state manager
-    private final CombatTagManager combatTagManager = new CombatTagManager();
+    private final CombatTagManager
+            combatTagManager =
+            CombatTagManager.getInstance();
 
     @EventHandler
-    public void onDamage(EntityDamageByEntityEvent event) {
+    public void onDamage(
+            EntityDamageByEntityEvent event) {
 
         // Get victim
         Entity victimEntity =
                 event.getEntity();
 
         // Validate living entity
-        if (!(victimEntity instanceof LivingEntity victim)) {
+        if (!(victimEntity
+                instanceof LivingEntity victim)) {
             return;
         }
 
@@ -66,15 +87,19 @@ public class CombatListener implements Listener {
                 event.getDamager();
 
         // Handle arrow shooter
-        if (attackerEntity instanceof Arrow arrow) {
+        if (attackerEntity
+                instanceof Arrow arrow) {
 
-            if (arrow.getShooter() instanceof Entity shooter) {
+            if (arrow.getShooter()
+                    instanceof Entity shooter) {
+
                 attackerEntity = shooter;
             }
         }
 
         // Validate living attacker
-        if (!(attackerEntity instanceof LivingEntity attacker)) {
+        if (!(attackerEntity
+                instanceof LivingEntity attacker)) {
             return;
         }
 
@@ -109,20 +134,44 @@ public class CombatListener implements Listener {
         DamageType damageType =
                 DamageType.MELEE;
 
-// Handle player weapon
+        // Handle player combat
         if (attacker instanceof Player player) {
-            WeaponData weapon = weaponManager.getWeapon(player);
+
+            // Get equipped weapon
+            CustomWeaponItem weapon =
+                    weaponManager.getWeapon(
+                            player
+                    );
+
             // Validate weapon
             if (weapon == null) {
                 return;
             }
+
             // Check attack cooldown
-            if (!cooldownManager.canAttack(player, weapon.getAttackSpeed())) {
+            if (!cooldownManager.canAttack(
+                    player,
+                    attackerCombat.getStats()
+                            .getFinalStat(
+                                    StatType.ATTACK_SPEED
+                            )
+            )) {
+
                 return;
             }
-            baseDamage = weapon.getDamage();
-            scaling = weapon.getScaling();
-            damageType = weapon.getDamageType();
+
+            // Use player final stats
+            baseDamage =
+                    attackerCombat.getStats()
+                            .getFinalStat(
+                                    StatType.MELEE_DAMAGE
+                            );
+
+            // Default scaling
+            scaling = 1.0;
+
+            // Default damage type
+            damageType = DamageType.MELEE;
         }
 
         // Create damage context
@@ -136,100 +185,106 @@ public class CombatListener implements Listener {
                 );
 
         // Apply damage
-        DamageResult result = damageEngine.damage(context);
-        //Enter combat state
+        DamageResult result =
+                damageEngine.damage(
+                        context
+                );
+
+        // Enter combat state
         combatTagManager.tag(attacker);
+
         combatTagManager.tag(victim);
-        //Spawn damage indicator
-        damageIndicatorManager.spawnDamage(attacker, victim, result);
+
+        // Spawn damage indicator
+        damageIndicatorManager.spawnDamage(
+                attacker,
+                victim,
+                result
+        );
+
         // Update mob health display
-        if(!(victim instanceof Player)){
-            mobHealthDisplay.updateHealth(victim,victimCombat);
+        if (!(victim instanceof Player)) {
+
+            mobHealthDisplay.updateHealth(
+                    victim,
+                    victimCombat
+            );
         }
+
         // Trigger player hurt feedback
-        if (victim instanceof Player playerVictim) {
+        if (victim
+                instanceof Player playerVictim) {
+
             // Play hurt animation
             playerVictim.playHurtAnimation(0);
+
             // Get hurt sound
-            var hurtSound = playerVictim.getHurtSound();
+            var hurtSound =
+                    playerVictim.getHurtSound();
+
             // Play hurt sound
             if (hurtSound != null) {
-                playerVictim.playSound(playerVictim.getLocation(), hurtSound, 1f, 1f);
+
+                playerVictim.playSound(
+                        playerVictim.getLocation(),
+                        hurtSound,
+                        1f,
+                        1f
+                );
             }
         }
+
         // Trigger mob hurt feedback
         else {
+
             victim.damage(0);
         }
 
         // Debug message
         if (attacker instanceof Player player) {
 
-            player.sendMessage("Damage: " + String.format("%.1f", result.getFinalDamage()));
-            player.sendMessage("Victim Health: " + String.format("%.1f", victimCombat.getHealth()));
+            player.sendMessage(
+                    "Damage: "
+                            + String.format(
+                            "%.1f",
+                            result.getFinalDamage()
+                    )
+            );
+
+            player.sendMessage(
+                    "Victim Health: "
+                            + String.format(
+                            "%.1f",
+                            victimCombat.getHealth()
+                    )
+            );
         }
 
         // Handle death
-        if(victimCombat.getHealth() <= 0){
-            deathManager.handleDeath(victim, victimCombat);
+        if (victimCombat.getHealth()
+                <= 0) {
+
+            deathManager.handleDeath(
+                    victim,
+                    victimCombat
+            );
         }
     }
 
     // Convert Bukkit entity to combat entity
-    private CombatEntity getCombatEntity(LivingEntity entity) {
+    private CombatEntity getCombatEntity(
+            LivingEntity entity) {
 
         // Handle player
         if (entity instanceof Player player) {
 
-            return entityManager.registerPlayer(player);
+            return entityManager
+                    .registerPlayer(player);
         }
 
         // Handle mob
-        return entityManager.registerMob(entity);
-    }
-
-    // Detect damage type from weapon
-    private DamageType detectDamageType(
-            LivingEntity attacker) {
-
-        // Handle non-player mobs
-        if (!(attacker instanceof Player player)) {
-            return DamageType.MELEE;
-        }
-
-        ItemStack item =
-                player.getInventory()
-                        .getItemInMainHand();
-
-        Material material =
-                item.getType();
-
-        String name =
-                material.name();
-
-        // Detect melee weapon
-        if (name.contains("SWORD")
-                || name.contains("AXE")) {
-
-            return DamageType.MELEE;
-        }
-
-        // Detect range weapon
-        if (material == Material.BOW
-                || material == Material.CROSSBOW) {
-
-            return DamageType.RANGE;
-        }
-
-        // Detect magic weapon
-        if (material == Material.BLAZE_ROD
-                || material == Material.STICK) {
-
-            return DamageType.MAGIC;
-        }
-
-        // Default damage type
-        return DamageType.MELEE;
+        return entityManager
+                .registerMob(entity);
     }
 
     // Initialize default mob stats
@@ -241,6 +296,7 @@ public class CombatListener implements Listener {
                 .getFinalStat(
                         StatType.MAX_HEALTH
                 ) > 0) {
+
             return;
         }
 

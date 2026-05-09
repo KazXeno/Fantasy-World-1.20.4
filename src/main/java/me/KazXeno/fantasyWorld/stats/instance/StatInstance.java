@@ -17,9 +17,14 @@ public class StatInstance {
     private double baseValue;
 
     // Active modifiers
-    private final List<StatModifier> modifiers = new ArrayList<>();
+    private final List<StatModifier>
+            modifiers =
+            new ArrayList<>();
 
-    public StatInstance(StatType statType, double baseValue) {
+    public StatInstance(
+            StatType statType,
+            double baseValue) {
+
         this.statType = statType;
         this.baseValue = baseValue;
     }
@@ -35,48 +40,109 @@ public class StatInstance {
     }
 
     // Set base value
-    public void setBaseValue(double baseValue) {
+    public void setBaseValue(
+            double baseValue) {
+
         this.baseValue = baseValue;
     }
 
     // Add stat modifier
-    public void addModifier(StatModifier modifier) {
+    public void addModifier(
+            StatModifier modifier) {
+
         modifiers.add(modifier);
     }
 
     // Remove stat modifier
-    public void removeModifier(StatModifier modifier) {
+    public void removeModifier(
+            StatModifier modifier) {
+
         modifiers.remove(modifier);
     }
 
     // Remove modifiers from source
-    public void removeModifiersBySource(String source) {
-        Iterator<StatModifier> iterator = modifiers.iterator();
+    public void removeModifiersBySource(
+            String source) {
+
+        Iterator<StatModifier> iterator =
+                modifiers.iterator();
+
         while (iterator.hasNext()) {
-            StatModifier modifier = iterator.next();
-            if (modifier.getSource().equalsIgnoreCase(source)) {
+
+            StatModifier modifier =
+                    iterator.next();
+
+            if (modifier.getSource()
+                    .equalsIgnoreCase(
+                            source
+                    )) {
+
                 iterator.remove();
             }
         }
     }
 
     // Get all modifiers
-    public List<StatModifier> getModifiers() {
+    public List<StatModifier>
+    getModifiers() {
+
         return modifiers;
     }
 
     // Calculate final stat value
     public double getFinalValue() {
+
         double flatBonus = 0;
+
         double percentBonus = 0;
-        for (StatModifier modifier : modifiers) {
-            if (modifier.getModifierType() == StatModifierType.FLAT) {
-                flatBonus += modifier.getValue();
-            }
-            else if (modifier.getModifierType() == StatModifierType.PERCENT) {
-                percentBonus += modifier.getValue();
+
+        double multiplier = 1;
+
+        // Calculate modifiers
+        for (StatModifier modifier
+                : modifiers) {
+
+            switch (
+                    modifier.getModifierType()
+            ) {
+
+                // Flat stat
+                case FLAT ->
+
+                        flatBonus +=
+                                modifier.getValue();
+
+                // Percent stat
+                case PERCENT ->
+
+                        percentBonus +=
+                                modifier.getValue();
+
+                // Final multiplier
+                case MULTIPLIER ->
+
+                        multiplier *=
+                                modifier.getValue();
             }
         }
-        return (baseValue + flatBonus) * (1 + percentBonus);
+
+        // Final formula
+        return (
+                (
+                        baseValue
+                                + flatBonus
+                )
+
+                        * (
+
+                        1
+                                + (
+                                percentBonus
+                                        / 100.0
+                        )
+                )
+
+                        * multiplier
+        );
     }
 }

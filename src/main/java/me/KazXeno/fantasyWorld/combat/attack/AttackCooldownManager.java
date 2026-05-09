@@ -8,56 +8,45 @@ import java.util.UUID;
 
 public class AttackCooldownManager {
 
-    // Next attack timestamps
-    private final Map<UUID, Long> cooldowns =
+    // Last attack timestamps
+    private final Map<UUID, Long>
+            lastAttack =
             new HashMap<>();
 
     // Check attack cooldown
-    public boolean canAttack(Player player,
-                             double attackSpeed) {
+    public boolean canAttack(
+            Player player,
+            double attackSpeed) {
+
+        // Prevent invalid speed
+        if (attackSpeed <= 0) {
+            attackSpeed = 1;
+        }
 
         long now =
                 System.currentTimeMillis();
 
-        long nextAttack =
-                cooldowns.getOrDefault(
+        long last =
+                lastAttack.getOrDefault(
                         player.getUniqueId(),
                         0L
                 );
 
-        // Check cooldown
-        if (now < nextAttack) {
-            return false;
-        }
-
-        // Calculate cooldown
+        // Convert attack speed to cooldown
         long cooldown =
                 (long) (1000 / attackSpeed);
 
-        // Set next attack time
-        cooldowns.put(
+        // Still on cooldown
+        if (now - last < cooldown) {
+            return false;
+        }
+
+        // Update timestamp
+        lastAttack.put(
                 player.getUniqueId(),
-                now + cooldown
+                now
         );
 
         return true;
-    }
-
-    // Get remaining cooldown
-    public long getRemaining(Player player) {
-
-        long now =
-                System.currentTimeMillis();
-
-        long nextAttack =
-                cooldowns.getOrDefault(
-                        player.getUniqueId(),
-                        0L
-                );
-
-        return Math.max(
-                0,
-                nextAttack - now
-        );
     }
 }

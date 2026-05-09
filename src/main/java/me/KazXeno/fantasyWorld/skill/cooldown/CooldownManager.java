@@ -8,11 +8,27 @@ import java.util.UUID;
 
 public class CooldownManager {
 
+    // Shared instance
+    private static final CooldownManager
+            instance =
+            new CooldownManager();
+
     // Player cooldown map
     private final Map<UUID,
             Map<String, Long>>
             cooldowns =
             new HashMap<>();
+
+    // Private constructor
+    private CooldownManager() {
+    }
+
+    // Get shared instance
+    public static CooldownManager
+    getInstance() {
+
+        return instance;
+    }
 
     // Check cooldown state
     public boolean isOnCooldown(

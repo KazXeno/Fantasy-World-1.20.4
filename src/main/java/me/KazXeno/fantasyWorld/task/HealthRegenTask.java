@@ -16,8 +16,9 @@ public class HealthRegenTask {
             EntityManager.getInstance();
 
     // Combat state manager
-    private final CombatTagManager combatTagManager =
-            new CombatTagManager();
+    private final CombatTagManager
+            combatTagManager =
+            CombatTagManager.getInstance();
 
     // Start health regeneration task
     public void start(JavaPlugin plugin) {

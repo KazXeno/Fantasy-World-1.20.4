@@ -8,6 +8,11 @@ import java.util.UUID;
 
 public class CombatTagManager {
 
+    // Shared instance
+    private static final CombatTagManager
+            instance =
+            new CombatTagManager();
+
     // Combat duration in milliseconds
     private static final long
             COMBAT_DURATION = 10000;
@@ -15,6 +20,17 @@ public class CombatTagManager {
     // Combat timestamps
     private final Map<UUID, Long>
             combatTags = new HashMap<>();
+
+    // Private constructor
+    private CombatTagManager() {
+    }
+
+    // Get shared instance
+    public static CombatTagManager
+    getInstance() {
+
+        return instance;
+    }
 
     // Enter combat state
     public void tag(LivingEntity entity) {
@@ -63,7 +79,8 @@ public class CombatTagManager {
     }
 
     // Remove combat state
-    public void remove(LivingEntity entity) {
+    public void remove(
+            LivingEntity entity) {
 
         combatTags.remove(
                 entity.getUniqueId()

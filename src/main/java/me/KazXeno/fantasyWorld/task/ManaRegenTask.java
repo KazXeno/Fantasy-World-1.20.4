@@ -15,8 +15,9 @@ public class ManaRegenTask {
     private final EntityManager entityManager = EntityManager.getInstance();
 
     // Combat state manager
-    private final CombatTagManager combatTagManager = new CombatTagManager();
-
+    private final CombatTagManager
+            combatTagManager =
+            CombatTagManager.getInstance();
     // Start mana regeneration task
     public void start(JavaPlugin plugin) {
 

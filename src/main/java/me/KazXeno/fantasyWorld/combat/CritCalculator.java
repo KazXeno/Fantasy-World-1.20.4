@@ -8,20 +8,34 @@ import java.util.concurrent.ThreadLocalRandom;
 public class CritCalculator {
 
     // Apply critical hit calculation
-    public DamageResult applyCrit(CombatEntity attacker,
-                                  double damage) {
+    public DamageResult applyCrit(
+            CombatEntity attacker,
+            double damage) {
 
-        double critChance = attacker.getStats()
-                .getFinalStat(StatType.CRIT_CHANCE);
+        double critChance =
+                attacker.getStats()
+                        .getFinalStat(
+                                StatType.CRIT_CHANCE
+                        );
 
-        double critDamage = attacker.getStats()
-                .getFinalStat(StatType.CRIT_DAMAGE);
+        double critDamage =
+                attacker.getStats()
+                        .getFinalStat(
+                                StatType.CRIT_DAMAGE
+                        );
 
+        // Roll critical hit
         boolean critical =
-                ThreadLocalRandom.current().nextDouble() < critChance;
+                ThreadLocalRandom.current()
+                        .nextDouble(100)
+                        < critChance;
 
+        // Apply crit multiplier
         if (critical) {
-            damage *= (1 + critDamage);
+
+            damage *= 1 + (
+                    critDamage / 100.0
+            );
         }
 
         return new DamageResult(

@@ -5,10 +5,26 @@ import java.util.Map;
 
 public class SkillManager {
 
+    // Shared instance
+    private static final SkillManager
+            instance =
+            new SkillManager();
+
     // Registered skills
     private final Map<String, Skill>
             skills =
             new HashMap<>();
+
+    // Private constructor
+    private SkillManager() {
+    }
+
+    // Get shared instance
+    public static SkillManager
+    getInstance() {
+
+        return instance;
+    }
 
     // Register skill
     public void registerSkill(
