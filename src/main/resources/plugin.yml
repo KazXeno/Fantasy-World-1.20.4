@@ -18,3 +18,6 @@ commands:
   getitem:
     description: Open custom item browser
     usage: /getitem
+  setrace:
+    description: Set player race
+    usage: /setrace <race>

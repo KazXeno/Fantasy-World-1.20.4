@@ -1,7 +1,9 @@
 package me.KazXeno.fantasyWorld.combat.pipeline;
 
 import me.KazXeno.fantasyWorld.combat.*;
+import me.KazXeno.fantasyWorld.combat.lifesteal.LifestealHandler;
 import me.KazXeno.fantasyWorld.entity.CombatEntity;
+import me.KazXeno.fantasyWorld.stats.StatType;
 
 public class DamagePipeline {
 
@@ -17,6 +19,11 @@ public class DamagePipeline {
     private final DefenseCalculator
             defenseCalculator =
             new DefenseCalculator();
+
+    // Lifesteal runtime
+    private final LifestealHandler
+            lifestealHandler =
+            new LifestealHandler();
 
     // Process damage pipeline
     public DamageResult process(
@@ -81,7 +88,7 @@ public class DamagePipeline {
         // DEFENSE
         // ====================
 
-        double finalDamage =
+        double defendedDamage =
                 defenseCalculator.applyDefense(
                         attacker,
                         victim,
@@ -89,15 +96,75 @@ public class DamagePipeline {
                         context.getDamageType()
                 );
 
-        pipeline.setFinalDamage(finalDamage);
+        // ====================
+        // FINAL MULTIPLIER
+        // ====================
+
+        double finalMultiplier =
+                attacker.getStats()
+                        .getFinalStat(
+                                StatType
+                                        .FINAL_DAMAGE_MULTIPLIER
+                        );
+
+        defendedDamage *= (
+                finalMultiplier / 100.0
+        );
+
+        // ====================
+        // FINAL REDUCTION
+        // ====================
+
+        double finalReduction =
+                victim.getStats()
+                        .getFinalStat(
+                                StatType
+                                        .FINAL_DAMAGE_REDUCTION
+                        );
+
+        defendedDamage *= (
+                1
+                        - (
+                        finalReduction / 100.0
+                )
+        );
+
+        // Prevent negative damage
+        double finalDamage =
+                Math.max(
+                        defendedDamage,
+                        0
+                );
+
+        pipeline.setFinalDamage(
+                finalDamage
+        );
 
         // Apply health damage
-        victim.damage(finalDamage);
-        // Return result
+        victim.damage(
+                finalDamage
+        );
+
+        // ====================
+        // LIFESTEAL
+        // ====================
+
+        double lifestealHeal =
+                lifestealHandler
+                        .applyLifesteal(
+                                attacker,
+                                finalDamage
+                        );
+
+        // ====================
+        // RESULT
+        // ====================
+
         return new DamageResult(
                 finalDamage,
                 pipeline.isCritical(),
-                0
+                0,
+                lifestealHeal
         );
     }
 }

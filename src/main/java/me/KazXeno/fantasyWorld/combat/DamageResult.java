@@ -2,22 +2,35 @@ package me.KazXeno.fantasyWorld.combat;
 
 public class DamageResult {
 
-    // Final damage value
+    // Final damage dealt
     private final double finalDamage;
 
-    // Critical hit result
+    // Critical hit state
     private final boolean critical;
 
-    // Lifesteal heal amount
+    // Blocked damage
+    private final double blockedDamage;
+
+    // Lifesteal heal
     private final double lifestealHeal;
 
-    public DamageResult(double finalDamage,
-                        boolean critical,
-                        double lifestealHeal) {
+    public DamageResult(
+            double finalDamage,
+            boolean critical,
+            double blockedDamage,
+            double lifestealHeal) {
 
-        this.finalDamage = finalDamage;
-        this.critical = critical;
-        this.lifestealHeal = lifestealHeal;
+        this.finalDamage =
+                finalDamage;
+
+        this.critical =
+                critical;
+
+        this.blockedDamage =
+                blockedDamage;
+
+        this.lifestealHeal =
+                lifestealHeal;
     }
 
     // Get final damage
@@ -25,12 +38,17 @@ public class DamageResult {
         return finalDamage;
     }
 
-    // Check critical hit
+    // Is critical hit
     public boolean isCritical() {
         return critical;
     }
 
-    // Get lifesteal heal amount
+    // Get blocked damage
+    public double getBlockedDamage() {
+        return blockedDamage;
+    }
+
+    // Get lifesteal heal
     public double getLifestealHeal() {
         return lifestealHeal;
     }

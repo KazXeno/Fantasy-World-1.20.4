@@ -41,6 +41,7 @@ public class CritCalculator {
         return new DamageResult(
                 damage,
                 critical,
+                0,
                 0
         );
     }

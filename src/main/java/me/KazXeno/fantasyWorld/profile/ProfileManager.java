@@ -1,11 +1,12 @@
 package me.KazXeno.fantasyWorld.profile;
 
+import me.KazXeno.fantasyWorld.profile.data.ProfileStorage;
+import me.KazXeno.fantasyWorld.race.RaceManager;
 import org.bukkit.entity.Player;
 
 import java.util.HashMap;
 import java.util.Map;
 import java.util.UUID;
-import me.KazXeno.fantasyWorld.profile.data.ProfileStorage;
 
 public class ProfileManager {
 
@@ -15,6 +16,8 @@ public class ProfileManager {
     private final Map<UUID, PlayerProfile> profiles = new HashMap<>();
     // Profile storage
     private final ProfileStorage storage = new ProfileStorage();
+    // Shared race manager
+    private final RaceManager raceManager = RaceManager.getInstance();
 
     // Get singleton instance
     public static ProfileManager getInstance() {
@@ -28,6 +31,8 @@ public class ProfileManager {
                     PlayerProfile profile = new PlayerProfile(uuid);
                     // Load saved data
                     storage.loadProfile(profile);
+                    // Apply race runtime
+                    raceManager.applyRace(profile);
                     return profile;
                 }
         );

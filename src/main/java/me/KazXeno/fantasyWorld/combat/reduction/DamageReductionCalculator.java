@@ -10,7 +10,7 @@ public class DamageReductionCalculator {
                                                 double damage) {
 
         double reduction = victim.getStats()
-                .getFinalStat(StatType.DAMAGE_REDUCTION);
+                .getFinalStat(StatType.FINAL_DAMAGE_REDUCTION);
 
         // Prevent invalid reduction
         if (reduction < 0) {

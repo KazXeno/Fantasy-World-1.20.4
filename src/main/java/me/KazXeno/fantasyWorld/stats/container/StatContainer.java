@@ -18,15 +18,25 @@ public class StatContainer {
 
     public StatContainer() {
 
-        // Initialize all stats
         for (StatType statType
                 : StatType.values()) {
 
+            double baseValue = 0;
+
+            // Final multipliers default to 100%
+            if (statType == StatType.FINAL_DAMAGE_MULTIPLIER ||
+                statType == StatType.FINAL_HEALING_MULTIPLIER ||
+                statType == StatType.SPEED) {
+
+                baseValue = 100;
+            }
+
             stats.put(
                     statType,
+
                     new StatInstance(
                             statType,
-                            0
+                            baseValue
                     )
             );
         }

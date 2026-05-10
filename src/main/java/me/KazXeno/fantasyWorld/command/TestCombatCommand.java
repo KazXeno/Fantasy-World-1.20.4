@@ -165,7 +165,7 @@ public class TestCombatCommand implements CommandExecutor, TabCompleter {
 
             // Setup final reduction
             victim.getStats().setBaseStat(
-                    StatType.DAMAGE_REDUCTION,
+                    StatType.FINAL_DAMAGE_REDUCTION,
                     damageReduction
             );
 

@@ -1,24 +1,27 @@
 package me.KazXeno.fantasyWorld;
 
-import me.KazXeno.fantasyWorld.command.TestCombatCommand;
-import me.KazXeno.fantasyWorld.command.StatsCommand;
-import me.KazXeno.fantasyWorld.skill.SkillManager;
-import me.KazXeno.fantasyWorld.skill.impl.WarriorHealSkill;
-import me.KazXeno.fantasyWorld.task.ManaRegenTask;
-import me.KazXeno.fantasyWorld.task.HealthRegenTask;
-import org.bukkit.command.PluginCommand;
-import org.bukkit.plugin.java.JavaPlugin;
-import me.KazXeno.fantasyWorld.task.PlayerSyncTask;
-import me.KazXeno.fantasyWorld.listener.CombatListener;
-import me.KazXeno.fantasyWorld.command.SkillCastCommand;
-import me.KazXeno.fantasyWorld.item.weapon.skill.WeaponSkillListener;
-import me.KazXeno.fantasyWorld.command.GetItemCommand;
+import me.KazXeno.fantasyWorld.command.*;
 import me.KazXeno.fantasyWorld.item.custom.gui.ItemBrowserListener;
 import me.KazXeno.fantasyWorld.item.equipment.EquipmentListener;
 import me.KazXeno.fantasyWorld.item.equipment.EquipmentManager;
-import org.bukkit.entity.Player;
+import me.KazXeno.fantasyWorld.item.weapon.skill.WeaponSkillListener;
+import me.KazXeno.fantasyWorld.listener.CombatListener;
+import me.KazXeno.fantasyWorld.listener.PlayerJoinListener;
 import me.KazXeno.fantasyWorld.profile.ProfileListener;
+import me.KazXeno.fantasyWorld.race.listener.RaceListener;
+import me.KazXeno.fantasyWorld.race.task.RaceTask;
+import me.KazXeno.fantasyWorld.skill.SkillManager;
+import me.KazXeno.fantasyWorld.skill.impl.WarriorHealSkill;
+import me.KazXeno.fantasyWorld.task.HealthRegenTask;
+import me.KazXeno.fantasyWorld.task.ManaRegenTask;
+import me.KazXeno.fantasyWorld.task.MovementSyncTask;
+import me.KazXeno.fantasyWorld.task.PlayerSyncTask;
+import org.bukkit.command.PluginCommand;
+import org.bukkit.entity.Player;
+import org.bukkit.plugin.java.JavaPlugin;
+
 import java.util.Objects;
+
 public final class FantasyWorld extends JavaPlugin {
 
     // Plugin instance
@@ -43,10 +46,14 @@ public final class FantasyWorld extends JavaPlugin {
         Objects.requireNonNull(getCommand("cast")).setExecutor(new SkillCastCommand());
         // Register get item command
         Objects.requireNonNull(getCommand("getitem")).setExecutor(new GetItemCommand());
+        // Register set race command
+        Objects.requireNonNull(getCommand("setrace")).setExecutor(new SetRaceCommand());
         // Register item browser listener
         getServer().getPluginManager().registerEvents(new ItemBrowserListener(), this);
         // Register profile listener
         getServer().getPluginManager().registerEvents(new ProfileListener(), this);
+        // Register race listener
+        getServer().getPluginManager().registerEvents(new RaceListener(), this);
         // Register skills
         SkillManager.getInstance().registerSkill(new WarriorHealSkill());
         // Start player sync task
@@ -55,12 +62,18 @@ public final class FantasyWorld extends JavaPlugin {
         new ManaRegenTask().start(this);
         // Start health regen task
         new HealthRegenTask().start(this);
+        // Start race runtime task
+        new RaceTask().start(this);
+        // Start movement sync task
+        new MovementSyncTask().start(this);
         // Register combat listener
         getServer().getPluginManager().registerEvents(new CombatListener(), this);
         // Register weapon skill listener
         getServer().getPluginManager().registerEvents(new WeaponSkillListener(), this);
         // Register equipment listener
         getServer().getPluginManager().registerEvents(new EquipmentListener(), this);
+        // Register player join listener
+        getServer().getPluginManager().registerEvents(new PlayerJoinListener(), this);
         // Initialize online player equipment
         EquipmentManager equipmentManager = new EquipmentManager();
         for (Player player : getServer().getOnlinePlayers()) {
