@@ -26,10 +26,10 @@ public class ActionBarManager {
                         .getFinalStat(StatType.MANA);
 
         String message =
-                "❤ " + (int) health +
+                "§c❤ " + (int) health +
                         "/" + (int) maxHealth +
                         "   " +
-                        "✦ " + (int) mana +
+                        "§b✦ " + (int) mana +
                         "/" + (int) maxMana;
 
         player.sendActionBar(

@@ -21,3 +21,6 @@ commands:
   setrace:
     description: Set player race
     usage: /setrace <race>
+  setclass:
+    description: Set player class
+    usage: /setclass <class>

@@ -1,9 +1,15 @@
 package me.KazXeno.fantasyWorld.combat.pipeline;
 
 import me.KazXeno.fantasyWorld.combat.*;
+import me.KazXeno.fantasyWorld.combat.death.DeathManager;
 import me.KazXeno.fantasyWorld.combat.lifesteal.LifestealHandler;
+import me.KazXeno.fantasyWorld.combat.modifier.DamageModifierManager;
+import me.KazXeno.fantasyWorld.combat.state.CombatTagManager;
 import me.KazXeno.fantasyWorld.entity.CombatEntity;
 import me.KazXeno.fantasyWorld.stats.StatType;
+import org.bukkit.Bukkit;
+import org.bukkit.entity.LivingEntity;
+import org.bukkit.entity.Player;
 
 public class DamagePipeline {
 
@@ -24,6 +30,21 @@ public class DamagePipeline {
     private final LifestealHandler
             lifestealHandler =
             new LifestealHandler();
+
+    // Combat state manager
+    private final CombatTagManager
+            combatTagManager =
+            CombatTagManager.getInstance();
+
+    // Damage modifier manager
+    private final DamageModifierManager
+            damageModifierManager =
+            new DamageModifierManager();
+
+    // Death manager
+    private final DeathManager
+            deathManager =
+            new DeathManager();
 
     // Process damage pipeline
     public DamageResult process(
@@ -62,6 +83,17 @@ public class DamagePipeline {
         pipeline.setScaledDamage(
                 scaledDamage
         );
+
+        // ====================
+        // MODIFIERS
+        // ====================
+
+        scaledDamage =
+                damageModifierManager
+                        .applyModifiers(
+                                context,
+                                scaledDamage
+                        );
 
         // ====================
         // CRIT
@@ -123,8 +155,7 @@ public class DamagePipeline {
                         );
 
         defendedDamage *= (
-                1
-                        - (
+                1 - (
                         finalReduction / 100.0
                 )
         );
@@ -140,7 +171,78 @@ public class DamagePipeline {
                 finalDamage
         );
 
-        // Apply health damage
+        // ====================
+        // COMBAT STATE
+        // ====================
+
+        // Get Bukkit entities
+        LivingEntity attackerEntity =
+                (LivingEntity) Bukkit.getEntity(
+                        attacker.getUuid()
+                );
+
+        LivingEntity victimEntity =
+                (LivingEntity) Bukkit.getEntity(
+                        victim.getUuid()
+                );
+
+        // Register attack state
+        if (attackerEntity != null) {
+
+            combatTagManager.registerAttack(
+                    attackerEntity
+            );
+        }
+
+        // Register damaged state
+        if (victimEntity != null) {
+
+            combatTagManager.registerDamaged(
+                    victimEntity
+            );
+        }
+
+        // ====================
+        // CUSTOM DEATH
+        // ====================
+
+        double remainingHealth =
+                victim.getHealth()
+                        - finalDamage;
+
+        // Prevent real death
+        if (remainingHealth <= 0) {
+
+            // Handle player death
+            if (victimEntity
+                    instanceof Player player) {
+
+                deathManager.handleDeath(
+                        player,
+                        victim
+                );
+            }
+
+            // Handle mob death
+            else if (victimEntity != null) {
+
+                victimEntity.remove();
+            }
+
+            // Stop pipeline
+            return new DamageResult(
+                    finalDamage,
+                    pipeline.isCritical(),
+                    0,
+                    0
+            );
+        }
+
+        // ====================
+        // DAMAGE
+        // ====================
+
+        // Apply custom damage
         victim.damage(
                 finalDamage
         );

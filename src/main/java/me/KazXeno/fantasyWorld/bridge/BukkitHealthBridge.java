@@ -33,6 +33,14 @@ public class BukkitHealthBridge {
                         )
                 );
 
+        // Prevent zero health
+        // Death handled elsewhere
+        currentHealth =
+                Math.max(
+                        0.1,
+                        currentHealth
+                );
+
         // Get health percentage
         double percent =
                 currentHealth / maxHealth;
@@ -41,14 +49,6 @@ public class BukkitHealthBridge {
         double vanillaHealth =
                 entity.getMaxHealth()
                         * percent;
-
-        // Handle death
-        if (currentHealth <= 0) {
-
-            entity.setHealth(0);
-
-            return;
-        }
 
         // Prevent invalid vanilla health
         vanillaHealth =

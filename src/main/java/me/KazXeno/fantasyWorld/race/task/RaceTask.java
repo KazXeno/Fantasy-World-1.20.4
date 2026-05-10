@@ -106,7 +106,7 @@ public class RaceTask
                                     -20,
 
                                     StatModifierType
-                                            .PERCENT
+                                            .FLAT
                             )
                     );
         }
@@ -272,7 +272,7 @@ public class RaceTask
                                     5,
 
                                     StatModifierType
-                                            .PERCENT
+                                            .FLAT
                             )
                     );
 
@@ -287,7 +287,7 @@ public class RaceTask
                                     10,
 
                                     StatModifierType
-                                            .PERCENT
+                                            .FLAT
                             )
                     );
         }

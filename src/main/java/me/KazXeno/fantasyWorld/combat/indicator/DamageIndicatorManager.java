@@ -23,101 +23,54 @@ public class DamageIndicatorManager {
     }
 
     // Spawn damage indicator
-    public void spawnDamage(
-            LivingEntity attacker,
-            LivingEntity victim,
-            DamageResult result) {
+    public void spawnDamage(LivingEntity attacker,
+                            LivingEntity victim,
+                            DamageResult result) {
 
         // Get direction toward attacker
-        Location victimLocation =
-                victim.getLocation();
+        Location victimLocation = victim.getLocation();
+        Location attackerLocation = attacker.getLocation();
 
-        Location attackerLocation =
-                attacker.getLocation();
+        double dx = attackerLocation.getX() - victimLocation.getX();
 
-        double dx =
-                attackerLocation.getX()
-                        - victimLocation.getX();
+        double dz = attackerLocation.getZ() - victimLocation.getZ();
 
-        double dz =
-                attackerLocation.getZ()
-                        - victimLocation.getZ();
-
-        double length =
-                Math.sqrt(dx * dx + dz * dz);
+        double length = Math.sqrt(dx * dx + dz * dz);
 
         // Normalize direction
         if (length != 0) {
-
             dx /= length;
-
             dz /= length;
         }
 
         // Random spread
-        double randomX =
-                ThreadLocalRandom.current()
-                        .nextDouble(-0.25, 0.25);
-
-        double randomZ =
-                ThreadLocalRandom.current()
-                        .nextDouble(-0.25, 0.25);
-
-        double randomY =
-                ThreadLocalRandom.current()
-                        .nextDouble(1.0, 1.6);
+        double randomX = ThreadLocalRandom.current().nextDouble(-0.25, 0.25);
+        double randomZ = ThreadLocalRandom.current().nextDouble(-0.25, 0.25);
+        double randomY = ThreadLocalRandom.current().nextDouble(1.0, 1.6);
 
         // Spawn location
-        Location location =
-                victimLocation.clone()
-                        .add(
-                                dx * 0.6 + randomX,
-                                randomY,
-                                dz * 0.6 + randomZ
-                        );
+        Location location = victimLocation.clone().add(dx * 0.6 + randomX, randomY, dz * 0.6 + randomZ);
 
         // Format damage
-        String damageText =
-                String.format(
-                        "%.1f",
-                        result.getFinalDamage()
-                );
+        String damageText = String.format("%.1f", result.getFinalDamage());
 
         // Critical damage
         if (result.isCritical()) {
-
-            damageText =
-                    "§6✧ "
-                            + damageText
-                            + " ✧";
+            damageText = "§6✧ " + damageText + " ✧";
         }
-
         // Normal damage
         else {
-
-            damageText =
-                    "§f" + damageText;
+            damageText = "§f" + damageText;
         }
 
         // Spawn text display
-        TextDisplay display =
-                (TextDisplay) victim.getWorld()
-                        .spawnEntity(
-                                location,
-                                EntityType.TEXT_DISPLAY
-                        );
+        TextDisplay display = (TextDisplay) victim.getWorld().spawnEntity(location, EntityType.TEXT_DISPLAY);
 
         // Configure display
         display.setText(damageText);
-
-        display.setBillboard(
-                Display.Billboard.CENTER
-        );
-
+        display.setBillboard(Display.Billboard.CENTER);
         display.setSeeThrough(false);
-
         display.setShadowed(false);
-
         display.setDefaultBackground(false);
 
         // Remove later
@@ -125,7 +78,6 @@ public class DamageIndicatorManager {
 
             @Override
             public void run() {
-
                 if (!display.isDead()) {
                     display.remove();
                 }

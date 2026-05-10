@@ -20,6 +20,7 @@ import org.bukkit.entity.Entity;
 import org.bukkit.entity.LivingEntity;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
+import org.bukkit.event.EventPriority;
 import org.bukkit.event.Listener;
 import org.bukkit.event.entity.EntityDamageByEntityEvent;
 
@@ -46,11 +47,6 @@ public class CombatListener
             cooldownManager =
             new AttackCooldownManager();
 
-    // Death manager
-    private final DeathManager
-            deathManager =
-            new DeathManager();
-
     // Damage indicator manager
     private final DamageIndicatorManager
             damageIndicatorManager =
@@ -68,9 +64,19 @@ public class CombatListener
             combatTagManager =
             CombatTagManager.getInstance();
 
-    @EventHandler
+    // Death manager
+    private final DeathManager
+            deathManager =
+            new DeathManager();
+
+    @EventHandler(
+            priority = EventPriority.HIGHEST
+    )
     public void onDamage(
             EntityDamageByEntityEvent event) {
+
+        // Always cancel vanilla damage
+        event.setCancelled(true);
 
         // Get victim
         Entity victimEntity =
@@ -79,8 +85,12 @@ public class CombatListener
         // Validate living entity
         if (!(victimEntity
                 instanceof LivingEntity victim)) {
+
             return;
         }
+
+        // Remove vanilla invulnerability frame
+        victim.setNoDamageTicks(0);
 
         // Get attacker
         Entity attackerEntity =
@@ -100,14 +110,9 @@ public class CombatListener
         // Validate living attacker
         if (!(attackerEntity
                 instanceof LivingEntity attacker)) {
+
             return;
         }
-
-        // Cancel vanilla damage
-        event.setCancelled(true);
-
-        // Remove vanilla invulnerability frame
-        victim.setNoDamageTicks(0);
 
         // Convert attacker to combat entity
         CombatEntity attackerCombat =
@@ -120,6 +125,7 @@ public class CombatListener
         // Validate combat entities
         if (attackerCombat == null
                 || victimCombat == null) {
+
             return;
         }
 
@@ -145,15 +151,18 @@ public class CombatListener
 
             // Validate weapon
             if (weapon == null) {
+
                 return;
             }
 
             // Check attack cooldown
             if (!cooldownManager.canAttack(
                     player,
+
                     attackerCombat.getStats()
                             .getFinalStat(
-                                    StatType.ATTACK_SPEED
+                                    StatType
+                                            .ATTACK_SPEED
                             )
             )) {
 
@@ -164,14 +173,16 @@ public class CombatListener
             baseDamage =
                     attackerCombat.getStats()
                             .getFinalStat(
-                                    StatType.MELEE_DAMAGE
+                                    StatType
+                                            .MELEE_DAMAGE
                             );
 
             // Default scaling
             scaling = 1.0;
 
             // Default damage type
-            damageType = DamageType.MELEE;
+            damageType =
+                    DamageType.MELEE;
         }
 
         // Create damage context
@@ -184,16 +195,37 @@ public class CombatListener
                         damageType
                 );
 
-        // Apply damage
+        // Apply custom damage
         DamageResult result =
                 damageEngine.damage(
                         context
                 );
 
-        // Enter combat state
-        combatTagManager.tag(attacker);
+        // Handle custom death
+        if (victimCombat.getHealth()
+                <= 0) {
 
-        combatTagManager.tag(victim);
+            // Handle player death
+            if (victim
+                    instanceof Player playerVictim) {
+
+                deathManager.handleDeath(
+                        playerVictim,
+                        victimCombat
+                );
+            }
+
+            return;
+        }
+
+        // Enter combat state
+        combatTagManager.tag(
+                attacker
+        );
+
+        combatTagManager.tag(
+                victim
+        );
 
         // Spawn damage indicator
         damageIndicatorManager.spawnDamage(
@@ -203,7 +235,8 @@ public class CombatListener
         );
 
         // Update mob health display
-        if (!(victim instanceof Player)) {
+        if (!(victim
+                instanceof Player)) {
 
             mobHealthDisplay.updateHealth(
                     victim,
@@ -237,11 +270,12 @@ public class CombatListener
         // Trigger mob hurt feedback
         else {
 
-            victim.damage(0);
+            victim.playHurtAnimation(0);
         }
 
         // Debug message
-        if (attacker instanceof Player player) {
+        if (attacker
+                instanceof Player player) {
 
             player.sendMessage(
                     "Damage: "
@@ -259,16 +293,6 @@ public class CombatListener
                     )
             );
         }
-
-        // Handle death
-        if (victimCombat.getHealth()
-                <= 0) {
-
-            deathManager.handleDeath(
-                    victim,
-                    victimCombat
-            );
-        }
     }
 
     // Convert Bukkit entity to combat entity
@@ -276,15 +300,20 @@ public class CombatListener
             LivingEntity entity) {
 
         // Handle player
-        if (entity instanceof Player player) {
+        if (entity
+                instanceof Player player) {
 
             return entityManager
-                    .registerPlayer(player);
+                    .registerPlayer(
+                            player
+                    );
         }
 
         // Handle mob
         return entityManager
-                .registerMob(entity);
+                .registerMob(
+                        entity
+                );
     }
 
     // Initialize default mob stats
@@ -301,21 +330,24 @@ public class CombatListener
         }
 
         // Default mob health
-        entity.getStats().setBaseStat(
-                StatType.MAX_HEALTH,
-                100
-        );
+        entity.getStats()
+                .setBaseStat(
+                        StatType.MAX_HEALTH,
+                        100
+                );
 
         // Default defenses
-        entity.getStats().setBaseStat(
-                StatType.MELEE_DEFENSE,
-                10
-        );
+        entity.getStats()
+                .setBaseStat(
+                        StatType.MELEE_DEFENSE,
+                        10
+                );
 
-        entity.getStats().setBaseStat(
-                StatType.MAGIC_DEFENSE,
-                10
-        );
+        entity.getStats()
+                .setBaseStat(
+                        StatType.MAGIC_DEFENSE,
+                        10
+                );
 
         // Restore health
         entity.setHealth(100);

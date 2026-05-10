@@ -118,6 +118,8 @@ public abstract class CombatEntity {
                 this
         );
     }
+    // Get current health
+    public double getCurrentHealth(){ return health;}
 
     // Get current mana
     public double getMana() {
@@ -125,9 +127,9 @@ public abstract class CombatEntity {
     }
 
     // Set current mana
-    public void setMana(
-            double mana) {
-
+    public void setMana(double mana) {
         this.mana = mana;
     }
+
+
 }

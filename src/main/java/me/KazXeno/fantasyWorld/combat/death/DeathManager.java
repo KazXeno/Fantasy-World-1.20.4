@@ -1,63 +1,84 @@
 package me.KazXeno.fantasyWorld.combat.death;
 
 import me.KazXeno.fantasyWorld.entity.CombatEntity;
-import me.KazXeno.fantasyWorld.entity.EntityManager;
-import org.bukkit.entity.LivingEntity;
+import me.KazXeno.fantasyWorld.stats.StatType;
+import org.bukkit.Bukkit;
+import org.bukkit.GameMode;
+import org.bukkit.Location;
+import org.bukkit.World;
 import org.bukkit.entity.Player;
+import org.bukkit.potion.PotionEffect;
 
 public class DeathManager {
 
-    // Shared entity manager
-    private final EntityManager entityManager =
-            EntityManager.getInstance();
-
-    // Handle entity death
-    public void handleDeath(LivingEntity entity,
-                            CombatEntity combatEntity) {
-
-        // Handle player death
-        if (entity instanceof Player player) {
-
-            handlePlayerDeath(
-                    player,
-                    combatEntity
-            );
-
-            return;
-        }
-
-        // Handle mob death
-        handleMobDeath(
-                entity,
-                combatEntity
-        );
-    }
-
-    // Handle player death
-    private void handlePlayerDeath(
+    // Handle custom death
+    public void handleDeath(
             Player player,
             CombatEntity combatEntity) {
 
-        // Remove combat entity
-        entityManager.removeEntity(
-                player.getUniqueId()
+        // Get first world
+        World world =
+                Bukkit.getWorlds()
+                        .get(0);
+
+        // Respawn location
+        Location respawn =
+                new Location(
+                        world,
+                        0,
+                        -60,
+                        0
+                );
+
+        // Teleport player
+        player.teleport(
+                respawn
         );
 
-        // Use vanilla death
-        player.setHealth(0);
-    }
-
-    // Handle mob death
-    private void handleMobDeath(
-            LivingEntity entity,
-            CombatEntity combatEntity) {
-
-        // Remove combat entity
-        entityManager.removeEntity(
-                entity.getUniqueId()
+        // Restore RPG health
+        combatEntity.setHealth(
+                combatEntity.getStats()
+                        .getFinalStat(
+                                StatType.MAX_HEALTH
+                        )
         );
 
-        // Remove entity
-        entity.setHealth(0);
+        // Restore vanilla health
+        player.setHealth(
+                player.getMaxHealth()
+        );
+
+        // Feed player
+        player.setFoodLevel(20);
+
+        // Extinguish fire
+        player.setFireTicks(0);
+
+        // Remove potion effects
+        for (PotionEffect effect
+                : player.getActivePotionEffects()) {
+
+            player.removePotionEffect(
+                    effect.getType()
+            );
+        }
+
+        // Reset velocity
+        player.setVelocity(
+                player.getVelocity()
+                        .zero()
+        );
+
+        // Survival safety
+        player.setGameMode(
+                GameMode.SURVIVAL
+        );
+
+        // Death message
+        Bukkit.broadcastMessage(
+                "§c"
+                        + player.getName()
+                        + " died."
+        );
     }
 }
