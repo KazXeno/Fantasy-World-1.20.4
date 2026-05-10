@@ -1,13 +1,14 @@
 package me.KazXeno.fantasyWorld.item.custom;
 
 import me.KazXeno.fantasyWorld.item.custom.data.CustomWeaponItem;
+import me.KazXeno.fantasyWorld.stats.StatType;
 import org.bukkit.Material;
+
 import java.util.Collection;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import me.KazXeno.fantasyWorld.item.custom.lore.LoreBuilder;
-import me.KazXeno.fantasyWorld.stats.StatType;
+
 public class CustomItemRegistry {
 
     // Registered items

@@ -6,7 +6,6 @@ import me.KazXeno.fantasyWorld.skill.Skill;
 import me.KazXeno.fantasyWorld.skill.SkillContext;
 import me.KazXeno.fantasyWorld.skill.SkillManager;
 import me.KazXeno.fantasyWorld.skill.cooldown.CooldownManager;
-import me.KazXeno.fantasyWorld.skill.impl.WarriorHealSkill;
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandExecutor;
 import org.bukkit.command.CommandSender;

@@ -2,7 +2,6 @@ package me.KazXeno.fantasyWorld.stats.instance;
 
 import me.KazXeno.fantasyWorld.stats.StatType;
 import me.KazXeno.fantasyWorld.stats.modifier.StatModifier;
-import me.KazXeno.fantasyWorld.stats.modifier.StatModifierType;
 
 import java.util.ArrayList;
 import java.util.Iterator;

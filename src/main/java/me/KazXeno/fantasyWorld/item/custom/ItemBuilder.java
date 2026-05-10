@@ -1,13 +1,14 @@
 package me.KazXeno.fantasyWorld.item.custom;
 
+import me.KazXeno.fantasyWorld.item.custom.data.CustomWeaponItem;
+import me.KazXeno.fantasyWorld.item.custom.lore.LoreBuilder;
 import org.bukkit.NamespacedKey;
 import org.bukkit.inventory.ItemFlag;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.meta.ItemMeta;
 import org.bukkit.persistence.PersistentDataType;
 import org.bukkit.plugin.java.JavaPlugin;
-import me.KazXeno.fantasyWorld.item.custom.data.CustomWeaponItem;
-import me.KazXeno.fantasyWorld.item.custom.lore.LoreBuilder;
+
 public class ItemBuilder {
     // Lore builder
     private final LoreBuilder
