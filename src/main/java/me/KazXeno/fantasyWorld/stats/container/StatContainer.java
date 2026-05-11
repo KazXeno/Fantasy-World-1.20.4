@@ -26,7 +26,8 @@ public class StatContainer {
             // Final multipliers default to 100%
             if (statType == StatType.FINAL_DAMAGE_MULTIPLIER ||
                 statType == StatType.FINAL_HEALING_MULTIPLIER ||
-                statType == StatType.SPEED) {
+                statType == StatType.SPEED ||
+                statType == StatType.ATTACK_SPEED) {
 
                 baseValue = 100;
             }

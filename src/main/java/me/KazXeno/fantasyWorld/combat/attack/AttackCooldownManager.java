@@ -12,22 +12,24 @@ public class AttackCooldownManager {
     private final Map<UUID, Long> lastAttack = new HashMap<>();
 
     // Check attack cooldown
-    public boolean canAttack(Player player, double attackSpeed) {
-        // Prevent invalid speed
-        if (attackSpeed <= 0) {
-            attackSpeed = 1;
-        }
+    public boolean canAttack(Player player,
+                             double attackSpeed) {
+
+        // Clamp attack speed
+        attackSpeed = Math.max(0, Math.min(attackSpeed, 200));
+
+        // Current time
         long now = System.currentTimeMillis();
+        // Last attack
         long last = lastAttack.getOrDefault(player.getUniqueId(), 0L);
-
-        // Convert attack speed to cooldown
-        long cooldown = (long) (1000 / attackSpeed);
-
+        // Calculate cooldown
+        double cooldownSeconds = 1.0 / Math.pow(2, attackSpeed / 100.0);
+        // Convert to milliseconds
+        long cooldown = (long) (cooldownSeconds * 1000);
         // Still on cooldown
         if (now - last < cooldown) {
             return false;
         }
-
         // Update timestamp
         lastAttack.put(player.getUniqueId(), now);
         return true;

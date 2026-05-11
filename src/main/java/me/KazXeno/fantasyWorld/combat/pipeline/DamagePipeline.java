@@ -226,7 +226,8 @@ public class DamagePipeline {
             // Handle mob death
             else if (victimEntity != null) {
 
-                victimEntity.remove();
+                // Trigger vanilla death animation
+                victimEntity.setHealth(0);
             }
 
             // Stop pipeline

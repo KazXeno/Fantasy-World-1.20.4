@@ -269,7 +269,9 @@ public class CombatListener
 
         // Trigger mob hurt feedback
         else {
-
+            // Play vanilla hurt feedback
+            victim.damage(0);
+            // Play hurt animation
             victim.playHurtAnimation(0);
         }
 

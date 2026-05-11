@@ -2,6 +2,7 @@ package me.KazXeno.fantasyWorld.combat.modifier;
 
 import me.KazXeno.fantasyWorld.combat.DamageContext;
 import me.KazXeno.fantasyWorld.combat.modifier.impl.BerserkerDamageModifier;
+import me.KazXeno.fantasyWorld.combat.modifier.impl.AssassinDamageModifier;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -19,6 +20,9 @@ public class DamageModifierManager {
         // Register modifiers
         registerModifier(
                 new BerserkerDamageModifier()
+        );
+        registerModifier(
+                new AssassinDamageModifier()
         );
     }
 

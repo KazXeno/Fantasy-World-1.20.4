@@ -19,7 +19,7 @@ public class ItemBrowserGUI {
     // Item registry
     private final CustomItemRegistry
             registry =
-            new CustomItemRegistry();
+            CustomItemRegistry.getInstance();
 
     // Item builder
     private final ItemBuilder

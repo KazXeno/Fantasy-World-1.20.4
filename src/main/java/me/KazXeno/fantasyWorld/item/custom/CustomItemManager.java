@@ -14,7 +14,7 @@ public class CustomItemManager {
     // Item registry
     private final CustomItemRegistry
             registry =
-            new CustomItemRegistry();
+            CustomItemRegistry.getInstance();
 
     public CustomItemManager(
             JavaPlugin plugin) {
