@@ -1,6 +1,7 @@
 package me.KazXeno.fantasyWorld.combat.modifier;
 
 import me.KazXeno.fantasyWorld.combat.DamageContext;
+import me.KazXeno.fantasyWorld.combat.modifier.impl.ArcherDamageModifier;
 import me.KazXeno.fantasyWorld.combat.modifier.impl.BerserkerDamageModifier;
 import me.KazXeno.fantasyWorld.combat.modifier.impl.AssassinDamageModifier;
 
@@ -23,6 +24,9 @@ public class DamageModifierManager {
         );
         registerModifier(
                 new AssassinDamageModifier()
+        );
+        registerModifier(
+                new ArcherDamageModifier()
         );
     }
 

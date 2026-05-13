@@ -28,13 +28,11 @@ public class StatContainer {
                 statType == StatType.FINAL_HEALING_MULTIPLIER ||
                 statType == StatType.SPEED ||
                 statType == StatType.ATTACK_SPEED) {
-
                 baseValue = 100;
             }
 
             stats.put(
                     statType,
-
                     new StatInstance(
                             statType,
                             baseValue

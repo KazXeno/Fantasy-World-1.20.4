@@ -7,16 +7,11 @@ import org.bukkit.entity.LivingEntity;
 public class BukkitHealthBridge {
 
     // Sync RPG health to Minecraft health
-    public void syncHealth(
-            LivingEntity entity,
-            CombatEntity combatEntity) {
+    public void syncHealth(LivingEntity entity,
+                           CombatEntity combatEntity) {
 
         // Get RPG max health
-        double maxHealth =
-                combatEntity.getStats()
-                        .getFinalStat(
-                                StatType.MAX_HEALTH
-                        );
+        double maxHealth = combatEntity.getStats().getFinalStat(StatType.MAX_HEALTH);
 
         // Prevent invalid max health
         if (maxHealth <= 0) {
@@ -24,45 +19,23 @@ public class BukkitHealthBridge {
         }
 
         // Clamp current health
-        double currentHealth =
-                Math.max(
-                        0,
-                        Math.min(
-                                combatEntity.getHealth(),
-                                maxHealth
-                        )
-                );
+        double currentHealth = Math.max(0, Math.min(combatEntity.getHealth(), maxHealth));
 
         // Prevent zero health
         // Death handled elsewhere
-        currentHealth =
-                Math.max(
-                        0.1,
-                        currentHealth
-                );
+        currentHealth = Math.max(0.1, currentHealth
+        );
 
         // Get health percentage
-        double percent =
-                currentHealth / maxHealth;
+        double percent = currentHealth / maxHealth;
 
         // Convert to vanilla health
-        double vanillaHealth =
-                entity.getMaxHealth()
-                        * percent;
+        double vanillaHealth = entity.getMaxHealth() * percent;
 
         // Prevent invalid vanilla health
-        vanillaHealth =
-                Math.max(
-                        0.1,
-                        Math.min(
-                                vanillaHealth,
-                                entity.getMaxHealth()
-                        )
-                );
+        vanillaHealth = Math.max(0.1, Math.min(vanillaHealth, entity.getMaxHealth()));
 
         // Sync vanilla health
-        entity.setHealth(
-                vanillaHealth
-        );
+        entity.setHealth(vanillaHealth);
     }
 }

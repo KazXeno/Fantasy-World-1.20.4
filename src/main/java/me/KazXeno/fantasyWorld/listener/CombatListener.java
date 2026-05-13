@@ -96,9 +96,15 @@ public class CombatListener
         Entity attackerEntity =
                 event.getDamager();
 
+        // Track projectile attack
+        boolean projectileAttack =
+                false;
+
         // Handle arrow shooter
         if (attackerEntity
                 instanceof Arrow arrow) {
+
+            projectileAttack = true;
 
             if (arrow.getShooter()
                     instanceof Entity shooter) {
@@ -169,20 +175,42 @@ public class CombatListener
                 return;
             }
 
-            // Use player final stats
-            baseDamage =
-                    attackerCombat.getStats()
-                            .getFinalStat(
-                                    StatType
-                                            .MELEE_DAMAGE
-                            );
+            // ====================
+            // PROJECTILE DAMAGE
+            // ====================
+
+            if (projectileAttack) {
+
+                baseDamage =
+                        attackerCombat.getStats()
+                                .getFinalStat(
+                                        StatType
+                                                .RANGE_DAMAGE
+                                );
+
+                damageType =
+                        DamageType.RANGE;
+            }
+
+            // ====================
+            // MELEE DAMAGE
+            // ====================
+
+            else {
+
+                baseDamage =
+                        attackerCombat.getStats()
+                                .getFinalStat(
+                                        StatType
+                                                .MELEE_DAMAGE
+                                );
+
+                damageType =
+                        DamageType.MELEE;
+            }
 
             // Default scaling
             scaling = 1.0;
-
-            // Default damage type
-            damageType =
-                    DamageType.MELEE;
         }
 
         // Create damage context
@@ -269,8 +297,10 @@ public class CombatListener
 
         // Trigger mob hurt feedback
         else {
+
             // Play vanilla hurt feedback
             victim.damage(0);
+
             // Play hurt animation
             victim.playHurtAnimation(0);
         }
